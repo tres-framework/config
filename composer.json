@@ -9,6 +9,19 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tres\\config\\": "src/"
+        }
+    },
+    "support": {
+        "documentation": "https://github.com/tres-framework/docs",
+        "issues": "https://github.com/tres-framework/config/issues",
+        "source": "https://github.com/tres-framework/config"
     }
 }
