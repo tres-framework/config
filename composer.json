@@ -1,0 +1,12 @@
+{
+    "name": "tres-framework/config",
+    "description": "Easily load your configuration files.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "pedzed",
+            "email": "pedzed@outlook.com"
+        }
+    ],
+    "require": {}
+}
