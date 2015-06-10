@@ -53,9 +53,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         
         $expectedValue = $value;
         
-        $actualValue = $config->get($key, $prefix);
-        $this->assertSame($expectedValue, $actualValue);
-        
         $actualValue = $config->get($prefix.$key);
         $this->assertSame($expectedValue, $actualValue);
     }
@@ -94,9 +91,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $config->addFromArray($value, $prefix);
         
         $expectedValue = $value;
-        
-        $actualValue = $config->get(null, $prefix);
-        $this->assertSame($expectedValue, $actualValue);
         
         $actualValue = $config->get($prefix);
         $this->assertSame($expectedValue, $actualValue);
