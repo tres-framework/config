@@ -6,10 +6,32 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
     
     const CONFIG_DIR = '../inc/config';
     
+    public function testGet() {
+        $config = new Config();
+        
+        $value = [
+            'abc.def' => 17,
+            'efg',
+            'hij' => [
+                'klm',
+                'nop' => 'qrst',
+            ],
+        ];
+        $config->addFromArray($value);
+        
+        $expectedValue = $value['abc.def'];
+        
+        $actualValue = $config->get()['abc.def'];
+        $this->assertSame($expectedValue, $actualValue);
+        
+        $actualValue = $config->get('abc.def');
+        $this->assertSame($expectedValue, $actualValue);
+    }
+    
     public function testAdd() {
         $config = new Config();
         
-        $key = 'key';
+        $key = 'key123';
         $value = 'value123';
         
         $config->add($key, $value);
@@ -24,7 +46,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $config = new Config();
         
         $prefix = 'prefix-';
-        $key = 'key';
+        $key = 'key123';
         $value = 'value123';
         
         $config->add($key, $value, $prefix);
@@ -215,27 +237,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $config->addFromDirectory(self::CONFIG_DIR, true);
         
         $actualValue = $config->get();
-        $this->assertSame($expectedValue, $actualValue);
-    }
-    
-    public function testGet() {
-        $config = new Config();
-        
-        $value = [
-            'abc.def' => 17,
-            'efg',
-            'hij' => [
-                'klm',
-                'nop' => 'qrst',
-            ],
-        ];
-        
-        $expectedValue = $value['abc.def'];
-        
-        $actualValue = $config->get()['abc.def'];
-        $this->assertSame($expectedValue, $actualValue);
-        
-        $actualValue = $config->get('abc.def');
         $this->assertSame($expectedValue, $actualValue);
     }
     
