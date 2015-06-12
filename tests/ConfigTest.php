@@ -4,6 +4,30 @@ use Tres\config\Config;
 
 class ConfigTest extends PHPUnit_Framework_TestCase {
     
+    private $_config1ValueFromFile = [
+        'abc' => 'def',
+        'ghi' => 123,
+        'jk' => [
+            'lmnop',
+            14 => 'qrst',
+        ],
+    ];
+    
+    private $_config2ValueFromFile = [
+        'uvw' => 'xyz',
+        0 => null,
+        null,
+        10,
+        'abc.true' => true,
+        'abc.false' => false,
+        'abc.string.true' => true,
+        'abc.string' => [
+            'def',
+            'ghi',
+            'klmnop' => 'q',
+        ],
+    ];
+    
     const CONFIG_DIR = '../inc/config';
     
     public function testGet() {
@@ -31,13 +55,10 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
     public function testAdd() {
         $config = new Config();
         
-        $key = 'key123';
-        $value = 'value123';
+        $config->add('key123', 'value123');
         
-        $config->add($key, $value);
-        
-        $expectedValue = $value;
-        $actualValue = $config->get($key);
+        $expectedValue = 'value123';
+        $actualValue = $config->get('key123');
         
         $this->assertSame($expectedValue, $actualValue);
     }
@@ -45,15 +66,10 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
     public function testAddWithPrefix() {
         $config = new Config();
         
-        $prefix = 'prefix-';
-        $key = 'key123';
-        $value = 'value123';
+        $config->add('key123', 'value123', 'prefix123');
         
-        $config->add($key, $value, $prefix);
-        
-        $expectedValue = $value;
-        
-        $actualValue = $config->get($prefix.$key);
+        $expectedValue = 'value123';
+        $actualValue = $config->get('prefix123.key123');
         $this->assertSame($expectedValue, $actualValue);
     }
     
@@ -78,8 +94,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
     
     public function testAddFromArrayWithPrefix() {
         $config = new Config();
-        
-        $prefix = 'prefix.';
         $value = [
             'abc.def' => 17,
             'efg',
@@ -88,15 +102,12 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
                 'nop' => 'qrst',
             ],
         ];
-        $config->addFromArray($value, $prefix);
+        $config->addFromArray($value, 'prefix123');
         
         $expectedValue = $value;
         
-        $actualValue = $config->get($prefix);
+        $actualValue = $config->get('prefix123');
         $this->assertSame($expectedValue, $actualValue);
-        
-        $actualValue = $config->get();
-        $this->assertSame($expectedValue, [$actualValue]);
     }
     
     public function testAddFromFile() {
@@ -119,89 +130,43 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
     
     public function testAddFromFileWithPrefix() {
         $config = new Config();
-        $prefix = 'prefix_';
         
-        $expectedValue = [
-            'abc' => 'def',
-            'ghi' => 123,
-            'jk' => [
-                'lmnop',
-                14 => 'qrst',
-            ],
-        ];
+        $expectedValue = $this->_config1ValueFromFile;
         
-        $config->addFromFile(self::CONFIG_DIR.'/config1.php', $prefix);
+        $config->addFromFile(self::CONFIG_DIR.'/config1.php', 'prefix123');
         
-        $actualValue = $config->get(null, $prefix);
+        $actualValue = $config->get('prefix123');
         $this->assertSame($expectedValue, $actualValue);
-        
-        $actualValue = $config->get($prefix);
-        $this->assertSame($expectedValue, $actualValue);
-        
-        $actualValue = $config->get();
-        $this->assertSame($expectedValue, [$actualValue]);
     }
     
-    public function testAddFromDirectory() {
+    public function testAddFromDirectoryConfig1() {
         $config = new Config();
-        
-        $expectedValue1 = [
-            'abc' => 'def',
-            'ghi' => 123,
-            'jk' => [
-                'lmnop',
-                14 => 'qrst',
-            ],
-        ];
-        
         $config->addFromDirectory(self::CONFIG_DIR);
         
-        $actualValue = $config->get(null, 'config1');
-        $this->assertSame($expectedValue1, $actualValue);
-        
+        $expectedValue = $this->_config1ValueFromFile;
         $actualValue = $config->get('config1');
-        $this->assertSame($expectedValue1, $actualValue);
         
-        $expectedValue2 = [
-            'uvw' => 'xyz',
-            0 => null,
-            null,
-            10,
-            'abc.true' => true,
-            'abc.false' => false,
-            'abc.string.true' => true,
-            'abc.string' => [
-                'def',
-                'ghi',
-                'klmnop' => 'q',
-            ],
-        ];
-        
-        $actualValue = $config->get(null, 'config2');
-        $this->assertSame($expectedValue2, $actualValue);
-        
-        $expectedValue = array_merge($expectedValue1, $expectedValue2);
-        $actualValue = $config->get(null);
         $this->assertSame($expectedValue, $actualValue);
     }
     
-    public function testPrefixDelimiter() {
+    public function testAddFromDirectoryConfig2() {
         $config = new Config();
+        $config->addFromDirectory(self::CONFIG_DIR);
         
-        $prefixDelimiter = '-';
-        $config->setPrefixDelimiter($prefixDelimiter);
+        $expectedValue = $this->_config2ValueFromFile;
+        $actualValue = $config->get('config2');
         
-        $expectedPrefixDelimiter = $prefixDelimiter;
-        $actualPrefixDelimiter = $config->getPrefixDelimiter();
-        $this->assertSame($expectedPrefixDelimiter, $actualPrefixDelimiter);
+        $this->assertSame($expectedValue, $actualValue);
     }
     
-    public function testInvalidPrefixDelimiterDataType() {
+    public function testAddFromDirectoryConfig1AndConfig2() {
         $config = new Config();
-        $config->setPrefixDelimiter(['abc']);
-        $config->setPrefixDelimiter(123);
+        $config->addFromDirectory(self::CONFIG_DIR);
         
-        $this->setExpectedException('Tres\config\ConfigException');
+        $expectedValue = array_merge($this->_config1ValueFromFile, $this->_config2ValueFromFile);
+        $actualValue = $config->get();
+        
+        $this->assertSame($expectedValue, $actualValue);
     }
     
     public function testAddFromDirectoryWithPrefix() {
