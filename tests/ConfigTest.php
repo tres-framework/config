@@ -50,16 +50,16 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $actualValue = $config->get('abc.def');
         $this->assertSame($expectedValue, $actualValue);
         
-        $actualValue = $config->get()['abc.def'];
+        $actualValue = $config->get()['abc']['def'];
         $this->assertSame($expectedValue, $actualValue);
         
         $actualValue = $config->get('abc')['def'];
         $this->assertSame($expectedValue, $actualValue);
         
-        $actualValue = $config->get()['hij.klm'];
+        $actualValue = $config->get('hij.klm');
         $this->assertSame($expectedValue, $actualValue);
         
-        $actualValue = $config->get()['hij.nop'];
+        $actualValue = $config->get('hij.nop');
         $this->assertSame($expectedValue, $actualValue);
         
         $expectedValue = [
