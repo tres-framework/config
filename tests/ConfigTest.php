@@ -120,7 +120,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $config = new Config();
         $config->addFromFile($this->_configDir.'/config1.php', 'prefix123');
         
-        $actualValue = $config->get('prefix123');
+        $actualValue = $config->get();
         $expectedValue = ['prefix123' => $this->_config1ValueFromFile];
         
         $this->assertSame($expectedValue, $actualValue);
