@@ -7,24 +7,15 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
     private $_config1ValueFromFile = [
         'abc' => 'def',
         'ghi' => 123,
-        'jk' => [
-            'lmnop',
-            14 => 'qrst',
-        ],
     ];
     
     private $_config2ValueFromFile = [
         'uvw' => 'xyz',
-        0 => null,
-        null,
-        10,
         'abc' => [
             'true' => true,
             'false' => false,
             'string' => [
                 'true' => true,
-                'def',
-                'ghi',
                 'klmnop' => 'q',
             ],
         ],
