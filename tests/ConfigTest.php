@@ -29,6 +29,13 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $this->_configDir = __DIR__.'/inc/config';
     }
     
+    public function testEmpty() {
+        $config = new Config();
+        $actualValue = $config->get();
+        
+        $this->assertEmpty($actualValue);
+    }
+    
     public function testGetByFullKey() {
         $config = new Config();
         
