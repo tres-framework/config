@@ -18,13 +18,15 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         0 => null,
         null,
         10,
-        'abc.true' => true,
-        'abc.false' => false,
-        'abc.string.true' => true,
-        'abc.string' => [
-            'def',
-            'ghi',
-            'klmnop' => 'q',
+        'abc' => [
+            'true' => true,
+            'false' => false,
+            'string' => [
+                'true' => true,
+                'def',
+                'ghi',
+                'klmnop' => 'q',
+            ],
         ],
     ];
     
@@ -150,7 +152,10 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $config = new Config();
         $config->addFromDirectory($this->_configDir);
         
-        $expectedValue = array_merge($this->_config1ValueFromFile, $this->_config2ValueFromFile);
+        $config1 = ['config1' => $this->_config1ValueFromFile];
+        $config2 = ['config2' => $this->_config2ValueFromFile];
+        
+        $expectedValue = array_merge($config1, $config2);
         $actualValue = $config->get();
         
         $this->assertSame($expectedValue, $actualValue);
