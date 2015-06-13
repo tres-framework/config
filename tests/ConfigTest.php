@@ -28,7 +28,13 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         ],
     ];
     
-    const CONFIG_DIR = '../inc/config';
+    // This must be a property, because PHP does not have constant expression 
+    // support up to version 5.6.0.
+    private $_configDir;
+    
+    protected function setUp() {
+        $this->_configDir = __DIR__.'/inc/config';
+    }
     
     public function testGetByFullKey() {
         $config = new Config();
@@ -110,37 +116,19 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $this->assertSame($expectedValue, $actualValue);
     }
     
-    public function testAddFromArray() {
-        $config = new Config();
-        $value = [
-            'abc.def' => 17,
-            'efg',
-            'hij' => [
-                'klm',
-                'nop' => 'qrst',
-            ],
-        ];
-        $config->addFromArray($value);
-        
-        $expectedValue = ['def' => 17];
-        $actualValue = $config->get('abc');
-        $this->assertSame($expectedValue, $actualValue);
-    }
-    
     public function testAddFromFile() {
         $config = new Config();
-        
-        $expectedValue = ['prefix123' => $this->_config1ValueFromFile];
-        
-        $config->addFromFile(self::CONFIG_DIR.'/config1.php', 'prefix123');
+        $config->addFromFile($this->_configDir.'/config1.php', 'prefix123');
         
         $actualValue = $config->get('prefix123');
+        $expectedValue = ['prefix123' => $this->_config1ValueFromFile];
+        
         $this->assertSame($expectedValue, $actualValue);
     }
     
     public function testAddFromDirectoryConfig1() {
         $config = new Config();
-        $config->addFromDirectory(self::CONFIG_DIR);
+        $config->addFromDirectory($this->_configDir);
         
         $expectedValue = $this->_config1ValueFromFile;
         $actualValue = $config->get('config1');
@@ -150,7 +138,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
     
     public function testAddFromDirectoryConfig2() {
         $config = new Config();
-        $config->addFromDirectory(self::CONFIG_DIR);
+        $config->addFromDirectory($this->_configDir);
         
         $expectedValue = $this->_config2ValueFromFile;
         $actualValue = $config->get('config2');
@@ -160,7 +148,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
     
     public function testAddFromDirectoryConfig1AndConfig2() {
         $config = new Config();
-        $config->addFromDirectory(self::CONFIG_DIR);
+        $config->addFromDirectory($this->_configDir);
         
         $expectedValue = array_merge($this->_config1ValueFromFile, $this->_config2ValueFromFile);
         $actualValue = $config->get();
