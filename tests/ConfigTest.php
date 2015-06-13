@@ -30,56 +30,77 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
     
     const CONFIG_DIR = '../inc/config';
     
-    public function testGet() {
+    public function testGetByFullKey() {
         $config = new Config();
         
-        $value = [
-            'abc.def' => 17,
-            'efg',
-            'hij' => [
-                'klm',
-                'nop' => 'qrst',
+        $config->addFromArray([
+            'cookie.lifetime_in_hours' => 48,
+            'database' => [
+                'mysql.host' => '127.0.0.1',
+                'mysql.user' => 'bob',
             ],
-            'hij.nop.deeply.nested.array.with.null' => null,
-            'hij.nop.deeply.nested.array.with.false' => false,
-        ];
-        $config->addFromArray($value);
+            'deeply.nested.array.with.zero' => 0,
+            'deeply.nested.array.with.a.null' => null,
+            'deeply.nested.array.with.a.false' => false,
+        ]);
         
-        $expectedValue = $value['abc.def'];
+        $actualValue = $config->get('cookie.lifetime_in_hours');
+        $expectedValue = 48;
         
-        $actualValue = $config->get('abc.def');
         $this->assertSame($expectedValue, $actualValue);
+    }
+    
+    public function testGetByFullKeyFromArray() {
+        $config = new Config();
         
-        $actualValue = $config->get('abc')['def'];
-        $this->assertSame($expectedValue, $actualValue);
+        $config->addFromArray([
+            'cookie.lifetime_in_hours' => 48,
+            'database' => [
+                'mysql.host' => '127.0.0.1',
+                'mysql.user' => 'bob',
+            ],
+            'deeply.nested.array.with.zero' => 0,
+            'deeply.nested.array.with.a.null' => null,
+            'deeply.nested.array.with.a.false' => false,
+        ]);
         
-        $actualValue = $config->get()['abc']['def'];
-        $this->assertSame($expectedValue, $actualValue);
-        
-        $expectedValue = $value[0];
-        $actualValue = $config->get(0);
-        $this->assertSame($expectedValue, $actualValue);
-        
-        $expectedValue = $value['hij.0'];
-        $actualValue = $config->get('hij.0');
-        $this->assertSame($expectedValue, $actualValue);
-        
-        $expectedValue = $value['hij.nop'];
-        $actualValue = $config->get('hij.nop');
-        $this->assertSame($expectedValue, $actualValue);
-        
+        $actualValue = $config->get('database.mysql');
         $expectedValue = [
-            'array' => [
-                'with' => [
+            'host' => '127.0.0.1',
+            'user' => 'bob',
+        ];
+        
+        $this->assertSame($expectedValue, $actualValue);
+    }
+    
+    public function testGetByPartialKeyFromArray() {
+        $config = new Config();
+        
+        $config->addFromArray([
+            'cookie.lifetime_in_hours' => 48,
+            'database' => [
+                'mysql.host' => '127.0.0.1',
+                'mysql.user' => 'bob',
+            ],
+            'deeply.nested.array.with.zero' => 0,
+            'deeply.nested.array.with.a.null' => null,
+            'deeply.nested.array.with.a.false' => false,
+        ]);
+        
+        $actualValue = $config->get('deeply.nested.array');
+        $expectedValue = [
+            'with' => [
+                'zero' => 0,
+                'a' => [
                     'null' => null,
                     'false' => false,
                 ],
             ],
         ];
-        $actualValue = $config->get('hij.nop.deeply.nested');
+        
         $this->assertSame($expectedValue, $actualValue);
     }
-    
+
     public function testAdd() {
         $config = new Config();
         $config->add('key123', 'value123');
