@@ -11,6 +11,13 @@ namespace Tres\config {
          */
         protected $_config = [];
         
+        /**
+         * @var array
+         */
+        protected $_extensionsToLookFor = [
+            'php',
+        ];
+        
         const DELIMITER = '.';
         
         /**
@@ -51,16 +58,22 @@ namespace Tres\config {
          * @param string $directory
          */
         public function addFromDirectory($directory) {
-            $filesToIgnore = [
-                '.',
-                '..',
-            ];
-            
-            $files = array_diff(scandir($directory), $filesToIgnore);
+            $files = scandir($directory);
             
             foreach($files as $file) {
-                $filename = strtok($file, '.');
-                $this->addFromFile($directory.'/'.$file, $filename);
+                $fullFilePath = $directory.'/'.$file;
+                $filename = pathinfo($file, PATHINFO_FILENAME);
+                $extension = pathinfo($file, PATHINFO_EXTENSION);
+                
+                if(!is_file($fullFilePath)) {
+                    continue;
+                }
+                
+                if(!in_array($extension, $this->_extensionsToLookFor)) {
+                    continue;
+                }
+                
+                $this->addFromFile($fullFilePath, $filename);
             }
         }
         
@@ -119,6 +132,10 @@ namespace Tres\config {
             }
             
             return $configs;
+        }
+        
+        public function addExtensionToLookFor($extension) {
+            $this->_extensionsToLookFor[] = ltrim($extension, '.');
         }
         
     }

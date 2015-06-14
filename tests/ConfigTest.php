@@ -159,4 +159,23 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $this->assertSame($expectedValue, $actualValue);
     }
     
+    public function testAddExtensionToLookFor() {
+        $config = new Config();
+        $config->addExtensionToLookFor('.config');
+        $config->addFromDirectory($this->_configDir);
+        
+        $config1 = ['config1' => $this->_config1ValueFromFile];
+        $config2 = ['config2' => $this->_config2ValueFromFile];
+        $configWithoutPHPExtension = [
+            'without_php_extension' => [
+                'included' => true,
+            ],
+        ];
+        
+        $expectedValue = array_merge($config1, $config2, $configWithoutPHPExtension);
+        $actualValue = $config->get();
+        
+        $this->assertSame($expectedValue, $actualValue);
+    }
+    
 }
